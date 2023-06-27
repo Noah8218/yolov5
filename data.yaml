@@ -1,0 +1,8 @@
+train: D:\py\data\train
+val: D:\py\data\valid
+
+
+
+nc: 1
+names: ['camera']
+
