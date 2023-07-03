@@ -1,0 +1,5 @@
+train: D:\py\data\train
+val: D:\py\data\valid
+
+nc: 2
+names: ['OK', 'NG']
