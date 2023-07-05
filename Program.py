@@ -15,8 +15,10 @@ from UI.editClass import editClass  # 변환된 UI 파일을 import 합니다.
 import Yolov5.yolov5Defect as yolov5Defect
 import tkinter as tk
 import asyncio
-from Device.asyncClient import Client, on_connect, on_disconnect, on_message
+from Device.asyncClient import Client, on_connect, on_disconnect, on_message, run_classification
 from PIL import Image
+from PyQt5.QtCore import pyqtSignal
+import io
 
 _current_path = os.path.abspath(__file__)
 _current_dir = os.path.dirname(_current_path)
@@ -30,12 +32,23 @@ form_class = uic.loadUiType(PATH)[0]
 VALID_FORMAT = ('.BMP', '.GIF', '.JPG', '.JPEG', '.PNG', '.PBM', '.PGM', '.PPM', '.TIFF', '.XBM')  # Image formats supported by Qt
 
 class LoopThread(QThread):
+    on_message = pyqtSignal(str)  # Signal that will be emitted when a message is received
+
+    def __init__(self, window_class):
+        super().__init__()
+        self.window_class = window_class
+
     def run(self):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        client = Client('localhost', 5000, on_connect, on_disconnect, on_message)
+        client = Client('localhost', 5000, on_connect, on_disconnect, self.message_received)
         loop.run_until_complete(client.start())
         loop.run_forever()
+
+    def message_received(self, message):
+        self.on_message.emit(message)  # Emit signal when a message is received
+
+
 
 
 def getImages(folder):
@@ -85,15 +98,23 @@ class WindowClass(QMainWindow, form_class) :
         self.open_folder.clicked.connect(self.selectDir)
         self.btnEditLabel.clicked.connect(self.open_edit_class)
         self.btnInfer.clicked.connect(self.RunClassification)
-        self.label = QLabel(self)
+        self.label = QLabel(self)   
         self.initUI() 
 
+        self.loop_thread = LoopThread(self)
+        self.loop_thread.on_message.connect(self.RunClassification)  # Connect RunClassification to the on_message signal
+        self.loop_thread.start()
 
-    def RunClassification(self):
-        h =  self.mainQimage.height()
-        w =  self.mainQimage.width()
-        print(self.mainQimage.format())
-        yolov5Defect.detect_and_draw(self.pilImage)
+
+    async def RunClassification(self, message):
+        if message == 'StartDefect':
+            # Convert byte data to a PIL Image object
+            image = Image.open(io.BytesIO(message))
+            # Run the classification
+            h =  image.height
+            w =  image.width
+            print(image.format)
+            yolov5Defect.detect_and_draw(image)
 
         #property
     def classLists(self):
@@ -178,7 +199,7 @@ if __name__ == "__main__" :
     #QApplication : 프로그램을 실행시켜주는 클래스
     app = QApplication(sys.argv) 
 
-    loop_thread = LoopThread()
+    #loop_thread = LoopThread()
     #loop_thread.start()
 
     #WindowClass의 인스턴스 생성
