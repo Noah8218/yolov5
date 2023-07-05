@@ -2,6 +2,8 @@ import asyncio
 from PIL import Image
 import io
 import sys, os
+import json
+
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from Yolov5 import yolov5Defect
 
@@ -48,7 +50,7 @@ class Client:
         while self.connected:
             try:
                 # Increase buffer size
-                data = await self.reader.read(1024)
+                data = await self.reader.read(102400)
                     
                 # Check if data contains both message and image data
                 if b'\n\n' in data:
@@ -61,11 +63,13 @@ class Client:
                     if message == 'StartDefect':
                         # Pass the image data to RunClassification function
                         image = Image.open(io.BytesIO(image_data))
-                        # Run the classification
-                        h =  image.height
-                        w =  image.width
-                        print(image.format)
-                        yolov5Defect.detect_and_draw(image)
+                        # Run the classification                        
+                        detected_objects = yolov5Defect.detect_and_draw(image)
+                        # Convert detected_objects to JSON string and send it to the server
+                        detected_objects_json = json.dumps(detected_objects)
+                        response_message = "ResultDefect\n\n" + detected_objects_json                    
+                        # Send it to the server
+                        await self.send(response_message)
                 else:
                     # If data contains only a message, decode it
                     message = data.decode()
