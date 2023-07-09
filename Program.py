@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from PyQt5.QtWidgets import QFileDialog
@@ -6,13 +6,13 @@ from PyQt5.QtWidgets import QLabel
 from PyQt5.QtGui import QImage, QPixmap
 import UI
 from UI.actions import ImageViewer
-import sys, os
+
 from PyQt5.QtWidgets import QApplication, QGraphicsScene, QGraphicsView, QMainWindow, QVBoxLayout, QWidget
 from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtCore import QThread
-from UI.editClass import editClass  # 변환된 UI 파일을 import 합니다.
-import Yolov5.yolov5Defect as yolov5Defect
+from editClass import editClass  # 변환된 UI 파일을 import 합니다.
+import yolov5Master.yolov5Defect as yolov5Defect
 import tkinter as tk
 import asyncio
 from Device.asyncClient import Client, on_connect, on_disconnect, on_message, run_classification
@@ -20,11 +20,13 @@ from PIL import Image
 from PyQt5.QtCore import pyqtSignal
 import io
 
-_current_path = os.path.abspath(__file__)
-_current_dir = os.path.dirname(_current_path)
-_loadPath = _current_dir + '\\save.txt'
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
-PATH = _current_dir + "\\main.ui"
+_loadPath = resource_path('save.txt')
+PATH = resource_path('main.ui')
 
 #UI파일 연결
 #단, UI파일은 Python 코드 파일과 같은 디렉토리에 위치해야한다.

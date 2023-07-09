@@ -2,7 +2,7 @@ from PyQt5.QtGui import QImage, QPixmap, QPainter
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPixmap, QPainter, QPen
 from PyQt5.QtCore import Qt, QPoint, QRect
-from UI.selectClass import selectClass
+from selectClass import selectClass
 
 __author__ = "Atinderpal Singh"
 __license__ = "MIT"
