@@ -1,0 +1,14 @@
+# exe
+pyinstaller Program.spec
+pyinstaller --distpath D:\Git\dist Program.spec
+
+# Train
+python train.py --img 320 --batch 16 --epochs 30 --data data.yaml --weights yolov5m.pt
+921244750516
+python train.py --img 320 --batch 16 --epochs 30 --data data.yaml --cfg yolov5m.yaml --weights yolov5m.pt
+
+python train.py --img 320 --batch 16 --epochs 50 --data data.yaml --cfg yolov5m.yaml --weights yolov5m.pt --device 0
+
+\py>predict.py --weights best.pt --source datapath --data data.yaml --img 320 --conf-thres 0.5 --iou-thres 0.5 -- device 0   
+
+python train.py --img 320 --batch 16 --epochs 500 --data data.yaml --cfg yolov5m.yaml --weights yolov5m.pt --device 0

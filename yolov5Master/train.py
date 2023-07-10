@@ -26,11 +26,6 @@ from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 
-try:
-    import comet_ml  # must be imported before torch (if installed)
-except ImportError:
-    comet_ml = None
-
 import numpy as np
 import torch
 import torch.distributed as dist
@@ -65,6 +60,10 @@ from utils.metrics import fitness
 from utils.plots import plot_evolve
 from utils.torch_utils import (EarlyStopping, ModelEMA, de_parallel, select_device, smart_DDP, smart_optimizer,
                                smart_resume, torch_distributed_zero_first)
+
+import warnings
+
+warnings.filterwarnings('ignore')
 
 LOCAL_RANK = int(os.getenv('LOCAL_RANK', -1))  # https://pytorch.org/docs/stable/elastic/run.html
 RANK = int(os.getenv('RANK', -1))
@@ -313,7 +312,7 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
                     imgs = nn.functional.interpolate(imgs, size=ns, mode='bilinear', align_corners=False)
 
             # Forward
-            with torch.cuda.amp.autocast(amp):
+            with torch.cuda.amp.autocast(False):
                 pred = model(imgs)  # forward
                 loss, loss_items = compute_loss(pred, targets.to(device))  # loss scaled by batch_size
                 if RANK != -1:
@@ -359,7 +358,7 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
                 results, maps, _ = validate.run(data_dict,
                                                 batch_size=batch_size // WORLD_SIZE * 2,
                                                 imgsz=imgsz,
-                                                half=amp,
+                                                half=False,
                                                 model=ema.ema,
                                                 single_cls=single_cls,
                                                 dataloader=val_loader,
@@ -584,7 +583,7 @@ def main(opt, callbacks=Callbacks()):
                 'gsutil',
                 'cp',
                 f'gs://{opt.bucket}/evolve.csv',
-                str(evolve_csv), ])
+                str(evolve_csv),])
 
         for _ in range(opt.evolve):  # generations to evolve
             if evolve_csv.exists():  # if evolve.csv exists: select best hyps and mutate

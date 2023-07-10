@@ -17,6 +17,8 @@ module_path = os.path.join(current_path, '..', 'yolov5Master')
 sys.path.append(module_path)
 
 import yolov5Defect
+import yolov5Train
+
 class Client:
     def __init__(self, host='127.0.0.1', port=5000, on_connect=None, on_disconnect=None, on_message=None, run_classification=None):
         self.host = host
@@ -80,10 +82,14 @@ class Client:
                     response_message = "ResultDefect\n\n" + detected_objects_json                    
                     # Send it to the server
                     await self.send(response_message)
+                elif message == 'StartTraining':
+                    yolov5Train.RunYolov5Train()
             else:
                 # If data contains only a message, decode it
                 message = data.decode()
                 print(f'Received: {message}')
+                if message == 'StartTraining':
+                    yolov5Train.RunYolov5Train()
 
             # Process the message
             self.process_message(message)

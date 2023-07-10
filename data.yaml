@@ -1,5 +1,5 @@
-train: D:\py\data\train
-val: D:\py\data\valid
+train: D:\Git\yolov5\data\train
+val: D:\Git\yolov5\data\valid
 
 nc: 2
 names: ['OK', 'NG']
