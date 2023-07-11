@@ -61,10 +61,10 @@ if app_env == 'development':
 else:  # production
     data_yaml = os.path.join(current_path2, 'data.yaml')
 
-def RunYolov5Train():
-    subprocess.run(['python', train_script, '--img', '160', '--batch', '32', '--epochs', '50', '--data', data_yaml, '--cfg', 'yolov5m.yaml', '--weights', 'yolov5m.pt', '--device', '0'])
+def RunYolov5Train(img, batch, epoch, cfg, weight):
+    subprocess.run(['python', train_script, '--img', img, '--batch', batch, '--epochs', epoch, '--data', data_yaml, '--cfg', cfg, '--weights', weight, '--device', '0'])
 
-RunYolov5Train()
+#RunYolov5Train()
 
 # YOLOv5 학습 스크립트를 호출합니다.
         # 이 코드는 'python train.py --img 640 --batch 16 --epochs 3 --data coco128.yaml --weights yolov5s.pt' 명령을 실행합니다.

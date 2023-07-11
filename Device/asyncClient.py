@@ -59,46 +59,53 @@ class Client:
         await self.writer.drain()
 
     async def read(self):
-       while self.connected:
-        try:
-            # Increase buffer size
-            data = await self.reader.read(102400)
+        while self.connected:
+            try:
+                # Increase buffer size
+                data = await self.reader.read(102400)
                 
-            # Check if data contains both message and image data
-            if b'\n\n' in data:
-                message_data, image_data = data.split(b'\n\n', 1)
+                # Check if data contains both message and image data
+                if b'\n\n' in data:
+                    message_data, additional_data = data.split(b'\n\n', 1)
                     
-                # Decode message data
-                message = message_data.decode()
-                print(f'Received: {message}')
+                    # Decode message data
+                    message = message_data.decode()
+                    print(f'Received: {message}')
                     
-                if message == 'StartDefect':
-                    # Pass the image data to RunClassification function
-                    image = Image.open(io.BytesIO(image_data))
-                    # Run the classification                        
-                    detected_objects = yolov5Defect.detect_and_draw(image)
-                    # Convert detected_objects to JSON string and send it to the server
-                    detected_objects_json = json.dumps(detected_objects)
-                    response_message = "ResultDefect\n\n" + detected_objects_json                    
-                    # Send it to the server
-                    await self.send(response_message)
-                elif message == 'StartTraining':
-                    yolov5Train.RunYolov5Train()
-            else:
-                # If data contains only a message, decode it
-                message = data.decode()
-                print(f'Received: {message}')
-                if message == 'StartTraining':
-                    yolov5Train.RunYolov5Train()
+                    if message == 'StartDefect':
+                        # Pass the image data to RunClassification function
+                        image = Image.open(io.BytesIO(additional_data))
+                        # Run the classification                        
+                        detected_objects = yolov5Defect.detect_and_draw(image)
+                        # Convert detected_objects to JSON string and send it to the server
+                        detected_objects_json = json.dumps(detected_objects)
+                        response_message = "ResultDefect\n\n" + detected_objects_json
+                        # Send it to the server
+                        await self.send(response_message)
+                    elif message == 'StartTraining':
+                        # Parse the training data
+                        training_data = json.loads(additional_data.decode())
+                        # Extract training parameters
+                        imgSize = training_data['imgSize']
+                        batch = training_data['batch']
+                        epoch = training_data['epoch']
+                        cfg = training_data['cfg']
+                        weight = training_data['weight']
+                        # Start the training
+                        yolov5Train.RunYolov5Train(imgSize, batch, epoch, cfg, weight)
+                else:
+                    # If data contains only a message, decode it
+                    message = data.decode()
+                    print(f'Received: {message}')
 
-            # Process the message
-            self.process_message(message)
+                # Process the message
+                self.process_message(message)
 
-        except Exception as e:
-            print(e)
-            print("Connection lost. Attempting to reconnect...")
-            self.connected = False
-            await self.disconnect()
+            except Exception as e:
+                print(e)
+                print("Connection lost. Attempting to reconnect...")
+                self.connected = False
+                await self.disconnect()
 
     def process_message(self, message):
         # Enum값에 따른 분기 처리
