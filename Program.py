@@ -13,7 +13,6 @@ from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtCore import QThread
 from editClass import editClass  # 변환된 UI 파일을 import 합니다.
 import yolov5Master.yolov5Defect as yolov5Defect
-import tkinter as tk
 import asyncio
 from Device.asyncClient import Client, on_connect, on_disconnect, on_message, run_classification
 from PIL import Image
