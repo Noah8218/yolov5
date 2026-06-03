@@ -10,3 +10,7 @@ PyQt를 사용하여 이미지를 라벨링하고, YOLOv5로 학습한 객체를
 
 ## 파이썬 레포지터리
 - [yolov5](https://github.com/Noah8218/yolov5)
+
+<img width="1920" height="1080" alt="%EC%BA%A1%EC%B2%98" src="https://github.com/user-attachments/assets/25265cf1-f386-4eff-9d82-3afee2bc7cdb" />
+
+<img width="412" height="412" alt="Untitled 4" src="https://github.com/user-attachments/assets/a3b68c00-0db3-40c5-b79f-c691d360f43e" />
