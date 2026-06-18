@@ -1,0 +1,12 @@
+C:\Git\yolov5\tools\YoloTcpClientLauncher\bin\Release\net8.0-windows\win-x64\YoloTcpClientLauncher.exe
+C:\Git\yolov5\tools\YoloTcpClientLauncher\bin\Release\net8.0-windows\win-x64\YoloTcpClientLauncher.deps.json
+C:\Git\yolov5\tools\YoloTcpClientLauncher\bin\Release\net8.0-windows\win-x64\YoloTcpClientLauncher.runtimeconfig.json
+C:\Git\yolov5\tools\YoloTcpClientLauncher\bin\Release\net8.0-windows\win-x64\YoloTcpClientLauncher.dll
+C:\Git\yolov5\tools\YoloTcpClientLauncher\obj\Release\net8.0-windows\win-x64\YoloTcpClientLauncher.GeneratedMSBuildEditorConfig.editorconfig
+C:\Git\yolov5\tools\YoloTcpClientLauncher\obj\Release\net8.0-windows\win-x64\YoloTcpClientLauncher.AssemblyInfoInputs.cache
+C:\Git\yolov5\tools\YoloTcpClientLauncher\obj\Release\net8.0-windows\win-x64\YoloTcpClientLauncher.AssemblyInfo.cs
+C:\Git\yolov5\tools\YoloTcpClientLauncher\obj\Release\net8.0-windows\win-x64\YoloTcpClientLauncher.csproj.CoreCompileInputs.cache
+C:\Git\yolov5\tools\YoloTcpClientLauncher\obj\Release\net8.0-windows\win-x64\YoloTcpClientLauncher.dll
+C:\Git\yolov5\tools\YoloTcpClientLauncher\obj\Release\net8.0-windows\win-x64\refint\YoloTcpClientLauncher.dll
+C:\Git\yolov5\tools\YoloTcpClientLauncher\obj\Release\net8.0-windows\win-x64\YoloTcpClientLauncher.genruntimeconfig.cache
+C:\Git\yolov5\tools\YoloTcpClientLauncher\obj\Release\net8.0-windows\win-x64\ref\YoloTcpClientLauncher.dll
