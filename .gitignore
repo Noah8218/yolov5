@@ -255,3 +255,17 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# Labeling app runtime sample set --------------------------------------------------------------------------------------
+!best.pt
+!data/train/
+!data/train/images/
+!data/train/images/**
+!data/train/labels/
+!data/train/labels/**
+!data/valid/
+!data/valid/images/
+!data/valid/images/**
+!data/valid/labels/
+!data/valid/labels/**
+data/**/labels.cache*

@@ -1163,7 +1163,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--image-root", default=str(DEFAULT_IMAGE_ROOT))
     parser.add_argument("--data-yaml", default=str(DEFAULT_DATA_YAML))
     parser.add_argument("--device", default="")
-    parser.add_argument("--img-size", type=int, default=640)
+    parser.add_argument("--img-size", type=int, default=320)
     parser.add_argument("--conf", type=float, default=0.25)
     parser.add_argument("--iou", type=float, default=0.45)
     parser.add_argument("--retry", action="store_true")

@@ -15,11 +15,38 @@ string modelRoot = GetOption(args, "--model-root")
     ?? Path.Combine(projectRoot, "yolov5Master");
 string imageRoot = GetOption(args, "--image-root")
     ?? Environment.GetEnvironmentVariable("YOLO_IMAGE_ROOT")
-    ?? @"C:\Git\py\KtemData";
+    ?? ResolveDefaultImageRoot(projectRoot);
 string host = GetOption(args, "--host") ?? "127.0.0.1";
 string port = GetOption(args, "--port") ?? "5000";
 string confidence = GetOption(args, "--conf") ?? "0.25";
+string imageSize = GetOption(args, "--img-size")
+    ?? GetOption(args, "--image-size")
+    ?? "320";
 string device = GetOption(args, "--device") ?? "";
+string ensureEnvironmentScript = Path.Combine(projectRoot, "launchers", "ensure-yolo-environment.ps1");
+bool installRequirements = HasFlag(args, "--install-requirements");
+bool promptInstall = HasFlag(args, "--prompt-install");
+
+if ((installRequirements || promptInstall) && File.Exists(ensureEnvironmentScript))
+{
+    int setupExitCode = RunEnvironmentSetup(
+        ensureEnvironmentScript,
+        projectRoot,
+        installRequirements ? "-InstallIfMissing" : "-PromptInstall");
+    if (setupExitCode != 0)
+    {
+        return setupExitCode;
+    }
+}
+else if (!File.Exists(pythonExe) && File.Exists(ensureEnvironmentScript))
+{
+    Console.WriteLine($"Python virtual environment not found: {pythonExe}");
+    Console.WriteLine("Run setup before starting the worker:");
+    Console.WriteLine($"powershell -NoProfile -ExecutionPolicy Bypass -File \"{ensureEnvironmentScript}\" -InstallIfMissing");
+    Console.WriteLine("Or launch this tool with --install-requirements.");
+    Console.WriteLine();
+    return 12;
+}
 
 if (!File.Exists(clientScript))
 {
@@ -53,6 +80,7 @@ AddArg(process, "--weights", weightsPath);
 AddArg(process, "--model-root", modelRoot);
 AddArg(process, "--image-root", imageRoot);
 AddArg(process, "--conf", confidence);
+AddArg(process, "--img-size", imageSize);
 AddArg(process, "--retry");
 
 if (!string.IsNullOrWhiteSpace(device))
@@ -72,6 +100,7 @@ Console.WriteLine($"Script       : {clientScript}");
 Console.WriteLine($"Weights      : {weightsPath}");
 Console.WriteLine($"Model root   : {modelRoot}");
 Console.WriteLine($"Image root   : {imageRoot}");
+Console.WriteLine($"Image size   : {imageSize}");
 Console.WriteLine($"TCP target   : {host}:{port}");
 Console.WriteLine();
 
@@ -119,4 +148,44 @@ static void ValidateDirectory(string path, string name)
     {
         throw new DirectoryNotFoundException($"{name} not found: {path}");
     }
+}
+
+static string ResolveDefaultImageRoot(string projectRoot)
+{
+    foreach (string candidate in new[]
+    {
+        Path.Combine(projectRoot, "data", "train", "images"),
+        Path.Combine(projectRoot, "data", "valid", "images"),
+        Path.Combine(projectRoot, "data", "images"),
+        @"C:\Git\py\data\train\images",
+        @"C:\Git\py\KtemData"
+    })
+    {
+        if (Directory.Exists(candidate))
+        {
+            return candidate;
+        }
+    }
+
+    return @"C:\Git\py\data\train\images";
+}
+
+static int RunEnvironmentSetup(string scriptPath, string projectRoot, string setupMode)
+{
+    using var process = new Process();
+    process.StartInfo.FileName = "powershell";
+    process.StartInfo.WorkingDirectory = projectRoot;
+    process.StartInfo.UseShellExecute = false;
+    process.StartInfo.ArgumentList.Add("-NoProfile");
+    process.StartInfo.ArgumentList.Add("-ExecutionPolicy");
+    process.StartInfo.ArgumentList.Add("Bypass");
+    process.StartInfo.ArgumentList.Add("-File");
+    process.StartInfo.ArgumentList.Add(scriptPath);
+    process.StartInfo.ArgumentList.Add("-ProjectRoot");
+    process.StartInfo.ArgumentList.Add(projectRoot);
+    process.StartInfo.ArgumentList.Add(setupMode);
+
+    process.Start();
+    process.WaitForExit();
+    return process.ExitCode;
 }
