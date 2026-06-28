@@ -1,0 +1,5 @@
+﻿path: .
+train: ../data/train/images
+val: ../data/valid/images
+nc: 2
+names: ['OK', 'NG']
